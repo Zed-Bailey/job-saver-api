@@ -1,20 +1,23 @@
 
-export const GoogleSheetsConfig = {
-    type: "service_account",
-    project_id: "",
-    private_key_id: "",
-    private_key: "",
-    client_email: "",
-    client_id: "",
-    auth_uri: "https://accounts.google.com/o/oauth2/auth",
-    token_uri: "https://oauth2.googleapis.com/token",
-    auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-    client_x509_cert_url: "",
-    universe_domain: "googleapis.com",
+interface Config {
+    type: string,
+    project_id: string,
+    private_key_id: string,
+    private_key: string,
+    client_email: string,
+    client_id: string,
+    auth_uri: string,
+    token_uri: string,
+    auth_provider_x509_cert_url: string,
+    client_x509_cert_url: string,
+    universe_domain: string,
 
     // these are not part of the config
-    SCOPES : [
-        'https://www.googleapis.com/auth/spreadsheets',
-        'https://www.googleapis.com/auth/drive.file',
-    ]
+    SCOPES: string[]
 }
+
+export const GoogleSheetsConfig: Config = require("../config.json");
+GoogleSheetsConfig.SCOPES =  [
+    'https://www.googleapis.com/auth/spreadsheets',
+    'https://www.googleapis.com/auth/drive.file',
+];

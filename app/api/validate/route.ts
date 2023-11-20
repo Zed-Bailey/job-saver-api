@@ -71,3 +71,11 @@ export async function POST (request: NextRequest) {
   return NextResponse.json({message: "Connected to sheet: " + sheet.title});
 
 }
+
+
+
+export async function GET (req: NextRequest) {
+  console.log(GoogleSheetsConfig);
+
+  return NextResponse.json(GoogleSheetsConfig);
+}
