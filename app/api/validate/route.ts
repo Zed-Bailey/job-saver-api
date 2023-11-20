@@ -1,9 +1,8 @@
 import { GoogleSheetsConfig } from '@/app/config';
+import { parseUrlForDocId } from '@/app/helpers/urlParse';
 import { JWT } from 'google-auth-library';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
-import type { NextApiRequest, NextApiResponse } from 'next'
 import { NextRequest, NextResponse } from 'next/server';
-import { Url } from 'url';
  
 type RequestData = {
   url: string
@@ -23,22 +22,10 @@ export async function POST (request: NextRequest) {
     return NextResponse.json({error: "Json was naughty"}, {status: 400});
   }
 
-  let url: URL;
+  
   let docId: string;
   try {
-    url = new URL(res.url);
-    
-    if(url.hostname !== "docs.google.com") {
-        throw new Error("Only google sheets are supported");
-    }
-
-    let sections = url.pathname.split('/');
-    if(sections.length >= 4) {
-        docId = sections[3];
-    } else {
-        throw new Error("Could not parse document id from url");
-    }
-
+    docId = parseUrlForDocId(res.url);
   } catch(e:any) {
     return NextResponse.json({error: e.message}, {status: 400});
   }
@@ -65,17 +52,15 @@ export async function POST (request: NextRequest) {
     headerValues: ["Company", "Role", "Url", "Applied", "Status", "Notes"],
     index: 0,
   }).catch((e) => {
-    console.log(e);
+    return NextResponse.json(
+      { message: "Failed to add application tracking sheet" },
+      { status: 400}
+    );
   });
 
-  return NextResponse.json({message: "Connected to sheet: " + sheet.title});
+  return NextResponse.json({
+    message: "Connected to sheet: " + sheet.title,
+    sheetId: docId
+  });
 
-}
-
-
-
-export async function GET (req: NextRequest) {
-  console.log(GoogleSheetsConfig);
-
-  return NextResponse.json(GoogleSheetsConfig);
 }

@@ -1,4 +1,5 @@
 import { GoogleSheetsConfig } from '@/app/config';
+import { parseUrlForDocId } from '@/app/helpers/urlParse';
 import { JWT } from 'google-auth-library';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import type { NextApiRequest, NextApiResponse } from 'next'
@@ -7,7 +8,8 @@ import { NextRequest, NextResponse } from 'next/server';
 type RequestData = {
   url: string,
   role: string,
-  company: string
+  company: string,
+  sheetId: string
 }
 
 export async function POST (request: NextRequest) {
@@ -18,27 +20,9 @@ export async function POST (request: NextRequest) {
   if(res == null) {
     return NextResponse.json({was: null});  
   }
-  let url: URL;
-  let docId: string;
-  try {
-    url = new URL(res.url);
-    
-    if(url.hostname !== "docs.google.com") {
-        throw new Error("Only google sheets are supported");
-    }
-
-    let sections = url.pathname.split('/');
-    if(sections.length >= 4) {
-        docId = sections[3];
-    } else {
-        throw new Error("Could not parse document id from url");
-    }
-
-  } catch(e:any) {
-    return NextResponse.json({error: e.message}, {status: 400});
-  }
-
-
+  
+  
+  
   // create a new google auth jwt token
   let token = new JWT({
     email: GoogleSheetsConfig.client_email,
@@ -46,7 +30,7 @@ export async function POST (request: NextRequest) {
     scopes: GoogleSheetsConfig.SCOPES,
   });
 
-  let sheet = new GoogleSpreadsheet(docId, token);
+  let sheet = new GoogleSpreadsheet(res.sheetId, token);
   
   try {
     await sheet.loadInfo();
@@ -55,5 +39,7 @@ export async function POST (request: NextRequest) {
   }
 
   await sheet.sheetsByIndex[0].addRow(res);
+
+  return NextResponse.json({message: "Saved Job"});
 
 }
