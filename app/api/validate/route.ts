@@ -53,7 +53,7 @@ export async function POST (request: NextRequest) {
     index: 0,
   }).catch((e) => {
     return NextResponse.json(
-      { message: "Failed to add application tracking sheet" },
+      { error: "Failed to add application tracking sheet" },
       { status: 400}
     );
   });
