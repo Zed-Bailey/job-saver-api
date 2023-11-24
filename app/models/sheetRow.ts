@@ -1,7 +1,7 @@
 
 export type SheetRow = {
-    company: string,
-    role: string,
-    url: string   
+    Company: string,
+    Role: string,
+    Url: string   
 }
 
