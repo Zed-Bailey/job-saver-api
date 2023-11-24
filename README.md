@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Job Saver API
+
+This is a Next.js api that is used by my job saver extension, this api allows anyone to add jobs without the need to create their own Googler cloud service account.
+
 
 ## Getting Started
 
-First, run the development server:
+Create a google cloud project and a service account, see: https://cloud.google.com/iam/docs/service-accounts-create
+
+then rename `config.example.json` to `config.json` and paste in your service account JSON key, the fields in the key should be similar to the ones in the config.
+
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
+API is then served on `http://localhost:3000/api`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Endpoints
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+##### `POST /validate`
+post a json body of shape `{url:string}`. 
 
-## Learn More
+Will validate the url, extract doc id and create a new sheet with the required columns.
 
-To learn more about Next.js, take a look at the following resources:
+Will return the sheet id on successful validation.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+##### `POST /job`
+post a json body of shape
+```json
+{
+    url: string,
+    role: string,
+    company: string,
+    sheetId: string //returned from validation endpoint
+}
+```
+will add a new row to the sheet.
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+##### `GET /job?d={base64 encoded json body}`
+used by the quick save shortcut as the content script cant make post requests. 
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Same functionality as the POST endpoint
+
+
+
+    
