@@ -1,9 +1,7 @@
 import { GoogleSheetsConfig } from '@/app/config';
-import { parseUrlForDocId } from '@/app/helpers/urlParse';
 import { SheetRow } from '@/app/models/sheetRow';
 import { JWT } from 'google-auth-library';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
-import type { NextApiRequest, NextApiResponse } from 'next'
 import { NextRequest, NextResponse } from 'next/server';
  
 type RequestData = {
@@ -14,6 +12,11 @@ type RequestData = {
 }
 
 
+/**
+ * POST endpoint for adding a job, used by the extension
+ * @param request the request data containing a json body
+ * @returns a json response
+ */
 export async function POST (request: NextRequest) {
   const res : RequestData| null = await request.json().catch(() => null);
 
@@ -36,6 +39,11 @@ export async function POST (request: NextRequest) {
 }
 
 
+/**
+ * GET endpoint for adding a job, used by the quick save shortcut
+ * @param request the request containing the base64 encoded request data on the search parameter 'd'
+ * @returns a json response
+ */
 export async function GET (request: NextRequest) {
   const url = new URL(request.url);
   const base64Body: string = url.searchParams.get("d") ?? "";
@@ -58,6 +66,10 @@ export async function GET (request: NextRequest) {
   return NextResponse.json({message: "Saved Job"});
 }
 
+/**
+ * creates a row from the request data and adds it to the sheet
+ * @param data request data
+ */
 async function AddRow(data: RequestData) {
   
   // create a new google auth jwt token

@@ -1,4 +1,5 @@
 import { GoogleSheetsConfig } from '@/app/config';
+import { SheetName } from '@/app/constants';
 import { parseUrlForDocId } from '@/app/helpers/urlParse';
 import { JWT } from 'google-auth-library';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
@@ -9,9 +10,9 @@ type RequestData = {
 }
 
 /**
- * Validates the given sheets url
+ * Validates the given documents url, adds a new sheet with the configured columns
  * @param request 
- * @returns 
+ * @returns a json response
  */
 export async function POST (request: NextRequest) {
   const res: RequestData | null = await request.json()
@@ -19,7 +20,7 @@ export async function POST (request: NextRequest) {
   .catch(() => null);
 
   if(res == null) {
-    return NextResponse.json({error: "Json was naughty"}, {status: 400});
+    return NextResponse.json({error: "No sheet data"}, {status: 400});
   }
 
   
@@ -47,7 +48,7 @@ export async function POST (request: NextRequest) {
   
 
   await sheet.addSheet({
-    title: 'Application Tracker',
+    title: SheetName,
     headerRowIndex: 0,
     headerValues: ["Company", "Role", "Url", "Applied", "Status", "Notes"],
     index: 0,
